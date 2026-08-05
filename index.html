@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Contaduría Virtus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #F4F6FA;
+    --surface: #FFFFFF;
+    --surface-2: #ECF0F7;
+    --border: #DCE2EE;
+    --text: #1B2233;
+    --text-dim: #626E82;
+    --brand-navy: #2E3A59;
+    --brand-navy-fg: #FFFFFF;
+    --brand-blue: #93ACDD;
+    --brand-blue-fg: #1B2A4D;
+    --accent: #2E3A59;
+    --accent-fg: #FFFFFF;
+    --accent-soft: #E3E9F6;
+    --good: #2F8F5B;
+    --good-bg: #E4F4EA;
+    --warn: #C98A2C;
+    --warn-bg: #FBF0DD;
+    --danger: #B23B3B;
+    --row-alt: #FAFBFD;
+    --shadow: 0 1px 2px rgba(27,34,51,0.06), 0 6px 16px rgba(27,34,51,0.06);
+    --radius: 10px;
+    --flow-in: #2F8F5B;
+    --flow-out: #eb6834;
+    --pal-0: #2a78d6; --pal-1: #eb6834; --pal-2: #1baf7a; --pal-3: #eda100;
+    --pal-4: #e87ba4; --pal-5: #1f7a1f; --pal-6: #4a3aa7; --pal-7: #e34948;
+    --chart-grid: #e1e0d9;
+    --chart-axis: #898781;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10141C;
+      --surface: #181E29;
+      --surface-2: #1F2733;
+      --border: #2B3444;
+      --text: #E8ECF4;
+      --text-dim: #8B96AA;
+      --brand-navy: #93ACDD;
+      --brand-navy-fg: #10141C;
+      --brand-blue: #6F8CC7;
+      --brand-blue-fg: #EAF0FC;
+      --accent: #93ACDD;
+      --accent-fg: #10141C;
+      --accent-soft: #24304A;
+      --good: #56C285;
+      --good-bg: #1C3327;
+      --warn: #E3AC55;
+      --warn-bg: #3A2E17;
+      --danger: #E27272;
+      --row-alt: #141A24;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 20px rgba(0,0,0,0.4);
+      --flow-in: #56C285;
+      --flow-out: #d95926;
+      --pal-0: #3987e5; --pal-1: #d95926; --pal-2: #199e70; --pal-3: #c98500;
+      --pal-4: #d55181; --pal-5: #3fae3f; --pal-6: #9085e9; --pal-7: #e66767;
+      --chart-grid: #2c2c2a;
+      --chart-axis: #8a8f97;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10141C; --surface: #181E29; --surface-2: #1F2733; --border: #2B3444;
+    --text: #E8ECF4; --text-dim: #8B96AA; --brand-navy: #93ACDD; --brand-navy-fg: #10141C;
+    --brand-blue: #6F8CC7; --brand-blue-fg: #EAF0FC; --accent: #93ACDD; --accent-fg: #10141C;
+    --accent-soft: #24304A; --good: #56C285; --good-bg: #1C3327; --warn: #E3AC55;
+    --warn-bg: #3A2E17; --danger: #E27272; --row-alt: #141A24;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 20px rgba(0,0,0,0.4);
+    --flow-in: #56C285; --flow-out: #d95926;
+    --pal-0: #3987e5; --pal-1: #d95926; --pal-2: #199e70; --pal-3: #c98500;
+    --pal-4: #d55181; --pal-5: #3fae3f; --pal-6: #9085e9; --pal-7: #e66767;
+    --chart-grid: #2c2c2a; --chart-axis: #8a8f97;
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F6FA; --surface: #FFFFFF; --surface-2: #ECF0F7; --border: #DCE2EE;
+    --text: #1B2233; --text-dim: #626E82; --brand-navy: #2E3A59; --brand-navy-fg: #FFFFFF;
+    --brand-blue: #93ACDD; --brand-blue-fg: #1B2A4D; --accent: #2E3A59; --accent-fg: #FFFFFF;
+    --accent-soft: #E3E9F6; --good: #2F8F5B; --good-bg: #E4F4EA; --warn: #C98A2C;
+    --warn-bg: #FBF0DD; --danger: #B23B3B; --row-alt: #FAFBFD;
+    --shadow: 0 1px 2px rgba(27,34,51,0.06), 0 6px 16px rgba(27,34,51,0.06);
+    --flow-in: #2F8F5B; --flow-out: #eb6834;
+    --pal-0: #2a78d6; --pal-1: #eb6834; --pal-2: #1baf7a; --pal-3: #eda100;
+    --pal-4: #e87ba4; --pal-5: #1f7a1f; --pal-6: #4a3aa7; --pal-7: #e34948;
+    --chart-grid: #e1e0d9; --chart-axis: #898781;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .num, input[type="date"], input[type="number"], td.num-cell, .ts-cell {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app { max-width: 1280px; margin: 0 auto; padding: 18px 20px 60px; }
+
+  /* ---------- header / brand ---------- */
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand svg { width: 36px; height: 36px; flex-shrink: 0; }
+  .brand .wordmark { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+  .brand .sub { color: var(--text-dim); font-size: 12px; margin-top: 1px; }
+  .badge-local {
+    font-size: 11px;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 11px;
+    background: var(--surface);
+    white-space: nowrap;
+  }
+
+  /* ---------- month strip ---------- */
+  .month-strip { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+  .month-scroll { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px; flex: 1; scrollbar-width: thin; }
+  .month-pill {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font: inherit;
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    padding: 9px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow);
+  }
+  .month-pill:hover { border-color: var(--accent); color: var(--text); }
+  .month-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .month-pill.status-ok:not(.active) { background: var(--good-bg); border-color: var(--good); color: var(--good); }
+  .month-pill.status-pend:not(.active) { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+  .month-pill.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .month-pill .status-dot { width: 7px; height: 7px; border-radius: 50%; background: transparent; flex-shrink: 0; }
+  .month-pill .status-dot.pend { background: var(--warn); }
+  .month-pill .status-dot.ok { background: var(--good); }
+  .month-pill.active .status-dot.pend { background: #FFE3B0; }
+  .month-pill.active .status-dot.ok { background: #C8F3DA; }
+
+  .resumen-pill {
+    appearance: none;
+    border: 1px solid var(--brand-blue);
+    background: var(--accent-soft);
+    color: var(--brand-navy);
+    font: inherit;
+    font-weight: 800;
+    font-size: 12.5px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    flex-shrink: 0;
+  }
+  .resumen-pill:hover { filter: brightness(1.03); }
+  .resumen-pill.active { background: var(--brand-navy); color: var(--brand-navy-fg); border-color: var(--brand-navy); }
+  .resumen-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ---------- stat row ---------- */
+  .summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); }
+  .stat .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-dim); font-weight: 700; }
+  .stat .value { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 19px; font-weight: 700; margin-top: 4px; }
+  .stat .value.pos { color: var(--good); }
+  .stat .value.neg { color: var(--danger); }
+
+  /* ---------- sections ---------- */
+  .section { margin-bottom: 22px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .section-head h2 { font-size: 14.5px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+  .section-head .tag {
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-dim);
+  }
+  .section-head .hint { color: var(--text-dim); font-size: 12px; }
+  .section.excepcionales .tablewrap { border-style: dashed; }
+  .section.excepcionales thead th { background: var(--brand-blue); color: var(--brand-blue-fg); }
+
+  .tablewrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 900px; }
+  table:not(.stats-table):not(.resumen-table) { table-layout: fixed; }
+  .stats-table { min-width: 0; }
+  thead th {
+    position: sticky; top: 0; background: var(--accent); color: var(--accent-fg);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 700;
+    text-align: left; padding: 9px 10px; white-space: nowrap; z-index: 1;
+  }
+  tbody td { border-top: 1px solid var(--border); padding: 5px 8px; vertical-align: middle; }
+  tbody tr:nth-child(even) { background: var(--row-alt); }
+  tbody tr.paid { background: var(--good-bg); }
+  tbody tr.paid:nth-child(even) { background: var(--good-bg); filter: brightness(0.98); }
+  tbody tr.fixed-row td.cliente-fixed, tbody tr.fixed-row td.concepto-fixed { font-weight: 700; }
+
+  .section.bps-section .tablewrap { border-style: dashed; opacity: 0.92; }
+  .section.bps-section thead th { background: var(--surface-2); color: var(--text-dim); }
+  .section.bps-section .section-head .tag { background: var(--warn-bg); color: var(--warn); }
+
+  input, select {
+    font: inherit; color: var(--text); background: var(--surface); border: 1px solid transparent;
+    border-radius: 6px; padding: 6px 7px; width: 100%; min-width: 0;
+  }
+  input:hover, select:hover { border-color: var(--border); }
+  input:focus, select:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-soft); }
+  input[type="number"] { text-align: right; }
+  td.cliente-fixed input, td.concepto-fixed input { font-weight: 700; }
+
+  .ts-cell { color: var(--text-dim); font-size: 11.5px; white-space: nowrap; }
+
+  select.cobrado-por { font-weight: 700; }
+  select.cobrado-por.set-theo { color: var(--pal-0); }
+  select.cobrado-por.set-bruno { color: var(--pal-6); }
+  select.cobrado-por.set-virtus { color: var(--pal-2); }
+  select.pagado-si { color: var(--good); font-weight: 700; }
+  select.pagado-no { color: var(--warn); font-weight: 700; }
+
+  .chip-toggle {
+    appearance: none; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-dim);
+    border-radius: 999px; padding: 4px 12px; font: inherit; font-weight: 700; font-size: 12px;
+    cursor: pointer; white-space: nowrap; min-width: 76px;
+  }
+  .chip-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip-toggle.on { background: var(--good-bg); border-color: var(--good); color: var(--good); }
+  .chip-toggle .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0; margin-right: 5px; transform: translateY(-1px); }
+  .chip-toggle.on .dot { opacity: 1; }
+
+  .row-actions { width: 32px; text-align: center; }
+  .del-btn { appearance: none; background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 15px; line-height: 1; padding: 4px; border-radius: 5px; }
+  .del-btn:hover { color: var(--danger); background: var(--surface-2); }
+  .del-btn[disabled] { visibility: hidden; }
+
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; flex-wrap: wrap; }
+  .add-btn {
+    appearance: none; border: 1px dashed var(--border); background: var(--surface); color: var(--accent);
+    font: inherit; font-weight: 700; font-size: 12.5px; padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  }
+  .add-btn:hover { background: var(--accent-soft); border-style: solid; border-color: var(--accent); }
+  .hint { color: var(--text-dim); font-size: 12px; }
+
+  .resumen-table th, .resumen-table td { text-align: right; }
+  .resumen-table th:first-child, .resumen-table td:first-child { text-align: left; }
+  tr.total-row { font-weight: 800; background: var(--surface-2); }
+  tr.total-row td { border-top: 2px solid var(--border); }
+  .resumen-table tbody tr.current-month td { box-shadow: inset 3px 0 0 var(--brand-blue); }
+  .cur-col-uyu, .cur-col-usd { border-left: 1px solid var(--border); }
+
+  .stats-table th:not(:first-child):not(:nth-child(2)), .stats-table td:not(:first-child):not(:nth-child(2)) { text-align: right; }
+  .stats-tables-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin-bottom: 14px; }
+
+  .debt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .debt-card { background: var(--accent-soft); border: 1px solid var(--brand-blue); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+  .debt-cur { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-dim); margin-bottom: 6px; }
+  .debt-msg { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+  .debt-amount { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-variant-numeric: tabular-nums; font-weight: 800; color: var(--brand-navy); }
+  .debt-detail { font-size: 12px; color: var(--text-dim); }
+  .debt-warn { color: var(--warn); font-weight: 700; }
+  .debt-even { color: var(--good); font-weight: 700; }
+
+  /* ---------- charts ---------- */
+  .charts-grid { display: flex; flex-direction: column; gap: 16px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 18px 12px; min-width: 0; }
+  .chart-card h3 { font-size: 13.5px; margin: 0 0 10px; font-weight: 800; }
+  .chart-currency-label { font-size: 11px; font-weight: 700; color: var(--text-dim); margin-bottom: 2px; }
+  .chart-svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart-grid-line { stroke: var(--chart-grid); stroke-width: 1; }
+  .chart-baseline { stroke: var(--chart-axis); stroke-width: 1; }
+  .chart-axis-label { font-size: 9px; fill: var(--chart-axis); font-family: ui-monospace, "SF Mono", Consolas, monospace; }
+  .chart-cat-label { font-size: 10px; fill: var(--text-dim); }
+  .chart-value-label { font-size: 10px; fill: var(--text); font-weight: 700; font-family: ui-monospace, "SF Mono", Consolas, monospace; }
+  .chart-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-dim); margin-bottom: 8px; }
+  .chart-legend .item { display: flex; align-items: center; gap: 5px; }
+  .chart-legend .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  .chart-empty { color: var(--text-dim); font-size: 12px; text-align: center; padding: 30px 0; }
+  .chart-card .chart-row + .chart-row { margin-top: 14px; }
+
+  footer.note { margin-top: 22px; color: var(--text-dim); font-size: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+
+  /* ---------- lock screen / loading ---------- */
+  #lock-screen, #loading-screen {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: var(--bg); z-index: 100; padding: 20px;
+  }
+  .lock-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 32px 28px; width: 100%; max-width: 320px; text-align: center;
+  }
+  .lock-logo { width: 44px; height: 44px; margin-bottom: 14px; }
+  .lock-title { font-size: 19px; font-weight: 800; color: var(--text); }
+  .lock-sub { font-size: 12.5px; color: var(--text-dim); margin: 4px 0 18px; }
+  #lock-input {
+    display: block; width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font: inherit; font-size: 15px; text-align: center;
+    margin-bottom: 12px;
+  }
+  #lock-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .lock-card button {
+    width: 100%; padding: 10px; border: none; border-radius: 8px; background: var(--accent);
+    color: var(--accent-fg); font: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  .lock-card button:hover { filter: brightness(1.05); }
+  .lock-error { color: var(--danger); font-size: 12.5px; margin-top: 10px; min-height: 16px; }
+  .loading-text { color: var(--text-dim); font-size: 13px; }
+  .app-hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+  <form id="lock-form">
+    <div class="lock-card">
+      <svg class="lock-logo" viewBox="0 0 100 100" aria-hidden="true">
+        <rect x="12" y="16" width="30" height="22" rx="9" fill="var(--brand-blue)"></rect>
+        <path d="M20 38 L27 48 L33 38 Z" fill="var(--brand-blue)"></path>
+        <path d="M34 88 L74 15" stroke="var(--brand-navy)" stroke-width="17" stroke-linecap="round"></path>
+      </svg>
+      <div class="lock-title">Contaduría Virtus</div>
+      <div class="lock-sub">Ingresá la clave para entrar</div>
+      <input type="password" id="lock-input" placeholder="Clave" autocomplete="off">
+      <button type="submit">Entrar</button>
+      <div class="lock-error" id="lock-error"></div>
+    </div>
+  </form>
+</div>
+
+<div id="loading-screen" class="app-hidden">
+  <div class="loading-text">Cargando datos…</div>
+</div>
+
+<div class="app" id="app-root" style="display:none">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <rect x="12" y="16" width="30" height="22" rx="9" fill="var(--brand-blue)"></rect>
+        <path d="M20 38 L27 48 L33 38 Z" fill="var(--brand-blue)"></path>
+        <path d="M34 88 L74 15" stroke="var(--brand-navy)" stroke-width="17" stroke-linecap="round"></path>
+      </svg>
+      <div>
+        <div class="wordmark">Virtus</div>
+        <div class="sub">Contaduría — prototipo de prueba</div>
+      </div>
+    </div>
+    <span class="badge-local" id="sync-badge">Sincronizado en la nube</span>
+  </header>
+
+  <div class="month-strip">
+    <div class="month-scroll" id="month-scroll"></div>
+    <button class="resumen-pill" id="resumen-btn" data-tab="resumen">Resumen anual</button>
+  </div>
+
+  <div id="month-panels"></div>
+
+  <!-- RESUMEN -->
+  <section class="panel" id="panel-resumen">
+    <div class="summary-row" id="resumen-stats"></div>
+    <div class="tablewrap">
+      <table class="resumen-table">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th class="cur-col-uyu">Ingresos UYU</th>
+            <th>Egresos UYU</th>
+            <th>Resultado UYU</th>
+            <th class="cur-col-usd">Ingresos USD</th>
+            <th>Egresos USD</th>
+            <th>Resultado USD</th>
+          </tr>
+        </thead>
+        <tbody id="resumen-body"></tbody>
+      </table>
+    </div>
+    <div class="hint" style="margin:10px 0 20px;">Ingresos = clientes fijos + Excepcionales marcados "Cobrado". Egresos = todos los gastos cargados (BPS no está incluido).</div>
+
+    <div class="section-head"><h2>Gráficas del año</h2><span class="hint">Resumen de los 12 meses</span></div>
+    <div id="resumen-charts"></div>
+  </section>
+
+  <footer class="note">
+    Contaduría de Agencia Virtus — los datos se guardan en la nube y se sincronizan entre todos los dispositivos que entren con la clave compartida.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= CONFIG — completá esto con tus datos de Supabase =================
+  var CONFIG = {
+    SUPABASE_URL: "https://bggxxmxeynrjdoszcwch.supabase.co",
+    SUPABASE_ANON_KEY: "sb_publishable_5J8lUGzr5eiqQvEcRjjUvw_6mrwoUGj",
+    SHARED_PASSWORD: "Virtusfaccinmeneguzzi123!"
+  };
+  var SESSION_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  var LOCK_KEY = "virtus_unlocked_v1";
+  var supabaseClient = null;
+  var ROW_ID = "main";
+
+  var CLIENTES_FIJOS = ["Asia", "Natasha", "Mimoso", "Yaya's", "Floreria", "Mobili", "Eduardo"];
+  var FIXED_INGRESOS = [
+    { slot: "asia", cliente: "Asia", moneda: "UYU" },
+    { slot: "natasha-1", cliente: "Natasha", moneda: "USD" },
+    { slot: "natasha-2", cliente: "Natasha", moneda: "UYU" },
+    { slot: "mimoso", cliente: "Mimoso", moneda: "UYU" },
+    { slot: "yayas", cliente: "Yaya's", moneda: "USD" },
+    { slot: "floreria", cliente: "Floreria", moneda: "UYU" },
+    { slot: "mobili", cliente: "Mobili", moneda: "UYU" },
+    { slot: "eduardo", cliente: "Eduardo", moneda: "UYU" }
+  ];
+  var CATEGORIAS_EGRESOS = ["Herramientas / Software", "Publicidad paga propia", "Freelancers"];
+  var CATEGORIA_SHORT = { "Herramientas / Software": "Software", "Publicidad paga propia": "Publicidad" };
+  var CATEGORIAS_EXCEPCIONALES = ["Web", "Otros"];
+  var METODOS = ["Transferencia", "Efectivo", "Tarjeta"];
+  var PERSONAS = ["Theo", "Bruno", "Virtus"];
+  var SI_NO = ["Sí", "No"];
+  var MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  var MESES_ABR = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  var MES_KEYS = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+
+  var EGRESOS_FIJOS = [
+    { concepto: "Adobe", categoria: "Herramientas / Software", monto: 23, moneda: "USD" },
+    { concepto: "Chat GPT", categoria: "Herramientas / Software", monto: 20, moneda: "USD" },
+    { concepto: "Claude", categoria: "Herramientas / Software", monto: 20, moneda: "USD" },
+    { concepto: "Videos", categoria: "Freelancers", monto: "", moneda: "UYU" },
+    { concepto: "Publicidad", categoria: "Publicidad paga propia", monto: "", moneda: "UYU" }
+  ];
+
+  // BPS vive aparte: acuerdo entre Theo y Bruno, nunca entra en el balance de Virtus
+  var BPS_FIJOS = [
+    { concepto: "BPS", monto: 1300, moneda: "UYU" }
+  ];
+
+  var todayMonthKey = MES_KEYS[new Date().getMonth()];
+
+  var CLIENT_COLOR = {};
+  CLIENTES_FIJOS.forEach(function (c, i) { CLIENT_COLOR[c] = "var(--pal-" + (i % 8) + ")"; });
+  var CLIENT_FALLBACK_COLOR = "var(--pal-7)";
+
+  var CATEGORY_COLOR = {};
+  CATEGORIAS_EGRESOS.forEach(function (c, i) { CATEGORY_COLOR[c] = "var(--pal-" + (Math.min(i, 7)) + ")"; });
+  var CATEGORY_FALLBACK_COLOR = "var(--pal-7)";
+
+  function uid() { return Math.random().toString(36).slice(2, 10); }
+  function now() { return new Date().toISOString(); }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  function newIngresoRow(cliente, fixed, slot, moneda) {
+    return { id: uid(), slot: slot || null, cliente: cliente || "", cobrado: false, fecha: "", metodo: "Transferencia", cobradoPor: "", monto: "", moneda: moneda || "UYU", pagado: "", notas: "", updatedAt: "", fixed: !!fixed };
+  }
+  function newExcepcionalRow() {
+    return { id: uid(), cliente: "", categoria: "", cobrado: false, fecha: "", metodo: "", cobradoPor: "", monto: "", moneda: "UYU", pagado: "", notas: "", updatedAt: "" };
+  }
+  function newEgresoRow(fixed) {
+    return { id: uid(), fecha: "", categoria: "", concepto: "", moneda: "UYU", monto: "", metodo: "Tarjeta", notas: "", updatedAt: "", fixed: !!fixed };
+  }
+  function newBpsRow(fixed) {
+    return { id: uid(), fecha: "", concepto: "", moneda: "UYU", monto: "", pagado: "", metodo: "", notas: "", updatedAt: "", fixed: !!fixed };
+  }
+
+  function defaultMonth() {
+    return {
+      ingresos: FIXED_INGRESOS.map(function (def) { return newIngresoRow(def.cliente, true, def.slot, def.moneda); }),
+      excepcionales: [],
+      egresos: EGRESOS_FIJOS.map(function (def) {
+        var r = newEgresoRow(true);
+        r.concepto = def.concepto; r.categoria = def.categoria; r.monto = def.monto; r.moneda = def.moneda;
+        return r;
+      }),
+      bps: BPS_FIJOS.map(function (def) {
+        var r = newBpsRow(true);
+        r.concepto = def.concepto; r.monto = def.monto; r.moneda = def.moneda;
+        return r;
+      })
+    };
+  }
+
+  function defaultState() {
+    var months = {};
+    MES_KEYS.forEach(function (k) { months[k] = defaultMonth(); });
+    return { months: months };
+  }
+
+  function migratePersonFields(r) {
+    if (r.cobradoPor === undefined) r.cobradoPor = r.theo ? "Theo" : (r.bruno ? "Bruno" : "");
+    delete r.theo;
+    delete r.bruno;
+  }
+
+  function migrateMonth(monthData) {
+    monthData.ingresos = monthData.ingresos || [];
+    monthData.excepcionales = monthData.excepcionales || [];
+    monthData.egresos = monthData.egresos || [];
+    monthData.bps = monthData.bps || [];
+
+    monthData.ingresos.forEach(migratePersonFields);
+    monthData.excepcionales.forEach(function (r) {
+      migratePersonFields(r);
+      if (r.cliente === undefined) r.cliente = "";
+      if (r.pagado === undefined) r.pagado = "";
+    });
+
+    // backfill a slot on rows created before slots existed — one legacy row claims the first matching slot
+    var claimedSlots = {};
+    monthData.ingresos.forEach(function (r) { if (r.slot) claimedSlots[r.slot] = true; });
+    monthData.ingresos.forEach(function (r) {
+      if (r.slot) return;
+      if (!r.fixed && CLIENTES_FIJOS.indexOf(r.cliente) === -1) return;
+      var candidates = FIXED_INGRESOS.filter(function (d) { return d.cliente === r.cliente && !claimedSlots[d.slot]; });
+      if (candidates.length) { r.slot = candidates[0].slot; r.fixed = true; claimedSlots[candidates[0].slot] = true; }
+    });
+    FIXED_INGRESOS.forEach(function (def) {
+      if (!claimedSlots[def.slot]) {
+        monthData.ingresos.push(newIngresoRow(def.cliente, true, def.slot, def.moneda));
+        claimedSlots[def.slot] = true;
+      }
+    });
+    var FIXED_INGRESOS_BY_SLOT = {};
+    FIXED_INGRESOS.forEach(function (def) { FIXED_INGRESOS_BY_SLOT[def.slot] = def; });
+    monthData.ingresos.forEach(function (r) {
+      if (r.fixed === undefined) r.fixed = !!r.slot;
+      if (r.pagado === undefined) r.pagado = "";
+      if (!r.metodo) r.metodo = "Transferencia";
+      // si la fila fija todavía no se tocó, sincronizá su moneda con el valor predeterminado actual
+      // (nunca pisa datos ya cargados: solo corre si no hay monto, fecha, cobro ni notas)
+      var def = r.slot ? FIXED_INGRESOS_BY_SLOT[r.slot] : null;
+      var untouched = !r.monto && !r.fecha && !r.cobrado && !r.cobradoPor && !r.notas;
+      if (def && untouched) r.moneda = def.moneda;
+    });
+
+    // pull any legacy BPS row out of egresos (it used to live there) and into its own section
+    var legacyBps = monthData.egresos.filter(function (r) { return r.concepto === "BPS"; });
+    monthData.egresos = monthData.egresos.filter(function (r) { return r.concepto !== "BPS"; });
+    legacyBps.forEach(function (r) {
+      delete r.categoria;
+      delete r.personal;
+      monthData.bps.push(r);
+    });
+
+    EGRESOS_FIJOS.forEach(function (def) {
+      var exists = monthData.egresos.some(function (r) { return r.concepto === def.concepto; });
+      if (!exists) {
+        var r = newEgresoRow(true);
+        r.concepto = def.concepto; r.categoria = def.categoria; r.monto = def.monto; r.moneda = def.moneda;
+        monthData.egresos.push(r);
+      }
+    });
+    monthData.egresos.forEach(function (r) {
+      if (r.fixed === undefined) r.fixed = EGRESOS_FIJOS.some(function (def) { return def.concepto === r.concepto; });
+      delete r.pagado;
+      delete r.personal;
+      if (!r.metodo) r.metodo = "Tarjeta";
+      if (r.concepto === "Videos" && r.categoria === "Otros") r.categoria = "Freelancers";
+    });
+
+    BPS_FIJOS.forEach(function (def) {
+      var exists = monthData.bps.some(function (r) { return r.concepto === def.concepto; });
+      if (!exists) {
+        var r = newBpsRow(true);
+        r.concepto = def.concepto; r.monto = def.monto; r.moneda = def.moneda;
+        monthData.bps.push(r);
+      }
+    });
+    monthData.bps.forEach(function (r) {
+      if (r.fixed === undefined) r.fixed = BPS_FIJOS.some(function (def) { return def.concepto === r.concepto; });
+      if (r.pagado === undefined) r.pagado = "";
+    });
+
+    return monthData;
+  }
+
+  function normalizeState(parsed) {
+    if (!parsed || !parsed.months) parsed = defaultState();
+    MES_KEYS.forEach(function (k) {
+      if (!parsed.months[k]) parsed.months[k] = defaultMonth();
+      migrateMonth(parsed.months[k]);
+    });
+    return parsed;
+  }
+
+  var state = defaultState(); // reemplazado por lo que venga de Supabase apenas carga
+  var activeMonth = todayMonthKey;
+  var activeTab = "mes"; // "mes" | "resumen"
+
+  var saveTimer = null;
+  var syncBadge = document.getElementById("sync-badge");
+  function setSyncBadge(text) { if (syncBadge) syncBadge.textContent = text; }
+
+  function saveNow() {
+    if (!supabaseClient) return;
+    setSyncBadge("Guardando…");
+    supabaseClient
+      .from("contaduria_state")
+      .update({ data: state, updated_by: SESSION_ID, updated_at: new Date().toISOString() })
+      .eq("id", ROW_ID)
+      .then(function (res) {
+        if (res.error) { setSyncBadge("Error al guardar — reintentando"); console.error(res.error); scheduleSave(1500); return; }
+        setSyncBadge("Sincronizado en la nube");
+      });
+  }
+  function scheduleSave(delay) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveNow, delay || 700);
+  }
+  function save() { scheduleSave(); }
+
+  function fmtMoney(n) {
+    var v = Number(n) || 0;
+    return v.toLocaleString("es-UY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtAxis(v) {
+    var av = Math.abs(v);
+    if (av >= 1000) return (v / 1000).toFixed(av >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k";
+    return String(Math.round(v));
+  }
+  function fmtTs(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    function pad(n) { return String(n).padStart(2, "0"); }
+    return pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function optionsHtml(list, selected) {
+    var html = '<option value="" ' + (selected ? "" : "selected") + "></option>";
+    list.forEach(function (opt) {
+      html += '<option value="' + esc(opt) + '" ' + (opt === selected ? "selected" : "") + ">" + esc(opt) + "</option>";
+    });
+    return html;
+  }
+  function addHint(container, text) {
+    var span = document.createElement("span");
+    span.className = "hint";
+    span.textContent = text;
+    container.appendChild(span);
+  }
+
+  // ================= CHART ENGINE (used by Resumen anual) =================
+  function niceCeil(v) {
+    if (v <= 0) return 1;
+    var exp = Math.floor(Math.log10(v));
+    var base = Math.pow(10, exp);
+    var f = v / base;
+    var niceF = f <= 1 ? 1 : (f <= 2 ? 2 : (f <= 5 ? 5 : 10));
+    return niceF * base;
+  }
+  function shortLabel(s) {
+    if (CATEGORIA_SHORT[s]) return CATEGORIA_SHORT[s];
+    return s.length > 12 ? s.slice(0, 11) + "…" : s;
+  }
+  function svgBars(categories, series, opts) {
+    opts = opts || {};
+    var W = opts.width || 1100;
+    var H = opts.height || 220;
+    var rotate = categories.length > 6;
+    var padL = 40, padR = 10, padT = 18, padB = rotate ? 56 : 34;
+    var plotW = W - padL - padR;
+    var plotH = H - padT - padB;
+    var n = categories.length || 1;
+    var groupW = plotW / n;
+    var seriesCount = series.length;
+    var barW = Math.max(8, Math.min(60, (groupW - 12) / seriesCount));
+
+    var maxVal = 0;
+    series.forEach(function (s) { (s.values || []).forEach(function (v) { if (v > maxVal) maxVal = v; }); });
+    var niceMax = niceCeil(maxVal || 1);
+    function yOf(v) { return padT + plotH - (v / niceMax) * plotH; }
+
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart-svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + esc(opts.ariaLabel || "gráfico") + '">';
+
+    var gridSteps = 4;
+    for (var g = 0; g <= gridSteps; g++) {
+      var gv = niceMax * g / gridSteps;
+      var gy = yOf(gv);
+      svg += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" class="chart-grid-line"/>';
+      svg += '<text x="' + (padL - 6) + '" y="' + (gy + 3).toFixed(1) + '" class="chart-axis-label" text-anchor="end">' + fmtAxis(gv) + '</text>';
+    }
+
+    categories.forEach(function (cat, i) {
+      var groupX = padL + i * groupW;
+      series.forEach(function (s, si) {
+        var v = (s.values && s.values[i]) || 0;
+        var color = (s.colors && s.colors[i]) || s.color || "var(--pal-0)";
+        var bx = groupX + (groupW - seriesCount * barW) / 2 + si * barW;
+        var bh = (v / niceMax) * plotH;
+        var by = padT + plotH - bh;
+        var ring = (opts.highlightIndex === i) ? ' stroke="var(--brand-blue)" stroke-width="2"' : "";
+        svg += '<rect x="' + bx.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + Math.max(barW - 4, 3).toFixed(1) + '" height="' + Math.max(bh, 0).toFixed(1) + '" rx="3" fill="' + color + '"' + ring + '><title>' + esc(cat) + (s.name ? " · " + esc(s.name) : "") + ": " + fmtMoney(v) + '</title></rect>';
+        if (opts.showValues && v > 0) {
+          svg += '<text x="' + (bx + (barW - 4) / 2).toFixed(1) + '" y="' + (by - 5).toFixed(1) + '" class="chart-value-label" text-anchor="middle">' + fmtAxis(v) + '</text>';
+        }
+      });
+      var lx = (groupX + groupW / 2).toFixed(1);
+      var ly = H - padB + 14;
+      var label = esc(shortLabel(cat));
+      if (rotate) {
+        svg += '<text x="' + lx + '" y="' + ly + '" class="chart-cat-label" text-anchor="end" transform="rotate(-38 ' + lx + ' ' + ly + ')">' + label + '</text>';
+      } else {
+        svg += '<text x="' + lx + '" y="' + ly + '" class="chart-cat-label" text-anchor="middle">' + label + '</text>';
+      }
+    });
+
+    svg += '<line x1="' + padL + '" y1="' + (padT + plotH).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + (padT + plotH).toFixed(1) + '" class="chart-baseline"/>';
+    svg += '</svg>';
+    return svg;
+  }
+  function legendHtml(series) {
+    if (series.length < 2) return "";
+    return '<div class="chart-legend">' + series.map(function (s) {
+      return '<span class="item"><span class="swatch" style="background:' + s.color + '"></span>' + esc(s.name) + '</span>';
+    }).join("") + '</div>';
+  }
+  function emptyChart(msg) { return '<div class="chart-empty">' + esc(msg || "Sin datos todavía") + '</div>'; }
+  function chartCard(title, hint, innerHtml) {
+    return '<div class="chart-card"><h3>' + esc(title) + (hint ? ' <span class="hint">· ' + esc(hint) + '</span>' : '') + '</h3>' + innerHtml + '</div>';
+  }
+  function orderedEntries(map, orderList, colorMap, fallbackColor) {
+    var names = orderList.filter(function (n) { return map[n]; });
+    Object.keys(map).forEach(function (n) { if (names.indexOf(n) === -1) names.push(n); });
+    return { names: names, values: names.map(function (n) { return map[n]; }), colors: names.map(function (n) { return colorMap[n] || fallbackColor; }) };
+  }
+  function currencySplitChart(aggMap, orderList, colorMap, fallbackColor, ariaPrefix) {
+    var out = "";
+    ["UYU", "USD"].forEach(function (cur) {
+      var e = orderedEntries(aggMap[cur], orderList, colorMap, fallbackColor);
+      if (!e.names.length) return;
+      out += '<div class="chart-row"><div class="chart-currency-label">' + cur + '</div>' +
+        svgBars(e.names, [{ colors: e.colors, values: e.values }], { height: 210, showValues: true, ariaLabel: ariaPrefix + " " + cur }) + '</div>';
+    });
+    return out || emptyChart();
+  }
+
+  // ================= AGGREGATION =================
+  function aggByClient(monthData) {
+    var res = { UYU: {}, USD: {} };
+    monthData.ingresos.concat(monthData.excepcionales).forEach(function (r) {
+      if (!r.cobrado) return;
+      var monto = Number(r.monto) || 0;
+      if (monto <= 0) return;
+      var cur = r.moneda === "USD" ? "USD" : "UYU";
+      var name = (r.cliente && r.cliente.trim()) ? r.cliente.trim() : "Sin cliente";
+      res[cur][name] = (res[cur][name] || 0) + monto;
+    });
+    return res;
+  }
+
+  function monthStats(monthData) {
+    var s = { ingUYU: 0, ingUSD: 0, egUYU: 0, egUSD: 0 };
+    monthData.ingresos.concat(monthData.excepcionales).forEach(function (r) {
+      if (!r.cobrado) return;
+      var monto = Number(r.monto) || 0;
+      if (r.moneda === "USD") s.ingUSD += monto; else s.ingUYU += monto;
+    });
+    monthData.egresos.forEach(function (r) {
+      var monto = Number(r.monto) || 0;
+      if (r.moneda === "USD") s.egUSD += monto; else s.egUYU += monto;
+    });
+    return s;
+  }
+
+  function monthStatus(monthData) {
+    var rows = monthData.ingresos.filter(function (r) { return r.cliente && r.cliente.trim(); });
+    if (!rows.length) return "";
+    var allPaid = rows.every(function (r) { return r.cobrado; });
+    return allPaid ? "ok" : "pend";
+  }
+
+  // per-client stats table rows: total facturado vs. cobrado vs. pendiente, split by moneda
+  function clientStatsRows(monthData) {
+    var map = {};
+    monthData.ingresos.concat(monthData.excepcionales).forEach(function (r) {
+      if (!r.cliente || !r.cliente.trim()) return;
+      var monto = Number(r.monto) || 0;
+      if (monto <= 0 && !r.cobrado) return;
+      var cur = r.moneda === "USD" ? "USD" : "UYU";
+      var key = r.cliente.trim() + "|" + cur;
+      if (!map[key]) map[key] = { cliente: r.cliente.trim(), moneda: cur, total: 0, cobrado: 0, pendiente: 0 };
+      map[key].total += monto;
+      if (r.cobrado) map[key].cobrado += monto; else map[key].pendiente += monto;
+    });
+    var rows = Object.keys(map).map(function (k) { return map[k]; });
+    rows.sort(function (a, b) {
+      var ia = CLIENTES_FIJOS.indexOf(a.cliente); if (ia === -1) ia = 999;
+      var ib = CLIENTES_FIJOS.indexOf(b.cliente); if (ib === -1) ib = 999;
+      if (ia !== ib) return ia - ib;
+      if (a.cliente !== b.cliente) return a.cliente.localeCompare(b.cliente);
+      return a.moneda.localeCompare(b.moneda);
+    });
+    return rows;
+  }
+
+  // per-category egresos stats: total, split by moneda
+  function categoriaStatsRows(egresos) {
+    var map = {};
+    egresos.forEach(function (r) {
+      var monto = Number(r.monto) || 0;
+      if (monto <= 0) return;
+      var catName = (r.categoria && r.categoria.trim()) ? r.categoria.trim() : "Sin categoría";
+      var cur = r.moneda === "USD" ? "USD" : "UYU";
+      var key = catName + "|" + cur;
+      if (!map[key]) map[key] = { categoria: catName, moneda: cur, total: 0 };
+      map[key].total += monto;
+    });
+    var rows = Object.keys(map).map(function (k) { return map[k]; });
+    rows.sort(function (a, b) {
+      var ia = CATEGORIAS_EGRESOS.indexOf(a.categoria); if (ia === -1) ia = 999;
+      var ib = CATEGORIAS_EGRESOS.indexOf(b.categoria); if (ib === -1) ib = 999;
+      if (ia !== ib) return ia - ib;
+      return a.moneda.localeCompare(b.moneda);
+    });
+    return rows;
+  }
+
+  // quién cobró cuánto (Ingresos + Excepcionales, solo lo marcado Cobrado), para repartir 50/50
+  function theoBrunoBalance(monthData) {
+    var res = { UYU: { theo: 0, bruno: 0, virtus: 0, sinAsignar: 0 }, USD: { theo: 0, bruno: 0, virtus: 0, sinAsignar: 0 } };
+    monthData.ingresos.concat(monthData.excepcionales).forEach(function (r) {
+      if (!r.cobrado) return;
+      var monto = Number(r.monto) || 0;
+      if (monto <= 0) return;
+      var cur = r.moneda === "USD" ? "USD" : "UYU";
+      if (r.cobradoPor === "Theo") res[cur].theo += monto;
+      else if (r.cobradoPor === "Bruno") res[cur].bruno += monto;
+      else if (r.cobradoPor === "Virtus") res[cur].virtus += monto;
+      else res[cur].sinAsignar += monto;
+    });
+    return res;
+  }
+
+  // ================= MONTH STRIP =================
+  var monthScroll = document.getElementById("month-scroll");
+
+  function renderMonthStrip() {
+    monthScroll.innerHTML = "";
+    MES_KEYS.forEach(function (key, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      var status = monthStatus(state.months[key]);
+      btn.className = "month-pill" + (status ? " status-" + status : "") + (activeTab === "mes" && activeMonth === key ? " active" : "");
+      var dotHtml = status ? '<span class="status-dot ' + status + '"></span>' : "";
+      btn.innerHTML = dotHtml + MESES_ABR[i];
+      btn.addEventListener("click", function () {
+        activeMonth = key;
+        activeTab = "mes";
+        renderAll();
+      });
+      monthScroll.appendChild(btn);
+    });
+  }
+
+  document.getElementById("resumen-btn").addEventListener("click", function () {
+    activeTab = "resumen";
+    renderAll();
+  });
+
+  // ================= MONTH PANEL BUILD =================
+  var monthPanelsHost = document.getElementById("month-panels");
+  var statsHost = null;
+  var statsTablesHost = null;
+  var debtHost = null;
+
+  function cobradoPorClass(v) {
+    return "cobrado-por" + (v === "Theo" ? " set-theo" : (v === "Bruno" ? " set-bruno" : (v === "Virtus" ? " set-virtus" : "")));
+  }
+
+  function buildCobradoPorSelect(row, touch) {
+    var sel = document.createElement("select");
+    sel.className = cobradoPorClass(row.cobradoPor);
+    sel.innerHTML = optionsHtml(PERSONAS, row.cobradoPor);
+    sel.addEventListener("change", function () {
+      row.cobradoPor = sel.value;
+      touch();
+      sel.className = cobradoPorClass(row.cobradoPor);
+      refreshComputed();
+    });
+    return sel;
+  }
+
+  function buildPagadoSelect(row, touch, gating) {
+    var sel = document.createElement("select");
+    sel.className = row.pagado === "Sí" ? "pagado-si" : (row.pagado === "No" ? "pagado-no" : "");
+    sel.innerHTML = optionsHtml(SI_NO, row.pagado);
+    sel.addEventListener("change", function () {
+      row.pagado = sel.value;
+      touch();
+      sel.className = row.pagado === "Sí" ? "pagado-si" : (row.pagado === "No" ? "pagado-no" : "");
+      if (gating) { refreshComputed(); renderMonthStrip(); }
+    });
+    return sel;
+  }
+
+  function buildIngresoRow(row, monthData) {
+    var tr = document.createElement("tr");
+    tr.className = (row.cobrado ? "paid " : "") + (row.fixed ? "fixed-row" : "");
+
+    function touch() { row.updatedAt = now(); save(); }
+
+    var tdCliente = document.createElement("td");
+    tdCliente.className = "cliente-fixed";
+    var clienteInput = document.createElement("input");
+    clienteInput.type = "text";
+    clienteInput.value = row.cliente;
+    clienteInput.setAttribute("list", "clientes-list");
+    clienteInput.addEventListener("input", function () { row.cliente = clienteInput.value; touch(); refreshComputed(); renderMonthStrip(); });
+    tdCliente.appendChild(clienteInput);
+    tr.appendChild(tdCliente);
+
+    var tdCobrado = document.createElement("td");
+    var cobradoBtn = document.createElement("button");
+    cobradoBtn.type = "button";
+    cobradoBtn.className = "chip-toggle" + (row.cobrado ? " on" : "");
+    cobradoBtn.innerHTML = '<span class="dot"></span>' + (row.cobrado ? "Cobrado" : "Pendiente");
+    cobradoBtn.addEventListener("click", function () { row.cobrado = !row.cobrado; touch(); renderMonthPanel(); renderMonthStrip(); });
+    tdCobrado.appendChild(cobradoBtn);
+    tr.appendChild(tdCobrado);
+
+    var tdFecha = document.createElement("td");
+    var fechaInput = document.createElement("input");
+    fechaInput.type = "date";
+    fechaInput.value = row.fecha;
+    fechaInput.addEventListener("input", function () { row.fecha = fechaInput.value; touch(); });
+    tdFecha.appendChild(fechaInput);
+    tr.appendChild(tdFecha);
+
+    var tdMetodo = document.createElement("td");
+    var metodoSel = document.createElement("select");
+    metodoSel.innerHTML = optionsHtml(METODOS, row.metodo);
+    metodoSel.addEventListener("change", function () { row.metodo = metodoSel.value; touch(); });
+    tdMetodo.appendChild(metodoSel);
+    tr.appendChild(tdMetodo);
+
+    var tdCobradoPor = document.createElement("td");
+    tdCobradoPor.appendChild(buildCobradoPorSelect(row, touch));
+    tr.appendChild(tdCobradoPor);
+
+    var tdMonto = document.createElement("td");
+    var montoInput = document.createElement("input");
+    montoInput.type = "number";
+    montoInput.step = "0.01";
+    montoInput.value = row.monto;
+    montoInput.addEventListener("input", function () { row.monto = montoInput.value; touch(); refreshComputed(); });
+    tdMonto.appendChild(montoInput);
+    tr.appendChild(tdMonto);
+
+    var tdMoneda = document.createElement("td");
+    var monedaSel = document.createElement("select");
+    monedaSel.innerHTML = optionsHtml(["UYU", "USD"], row.moneda);
+    monedaSel.addEventListener("change", function () { row.moneda = monedaSel.value; touch(); refreshComputed(); });
+    tdMoneda.appendChild(monedaSel);
+    tr.appendChild(tdMoneda);
+
+    var tdPagado = document.createElement("td");
+    tdPagado.appendChild(buildPagadoSelect(row, touch, false));
+    tr.appendChild(tdPagado);
+
+    var tdNotas = document.createElement("td");
+    var notasInput = document.createElement("input");
+    notasInput.type = "text";
+    notasInput.value = row.notas;
+    notasInput.addEventListener("input", function () { row.notas = notasInput.value; touch(); });
+    tdNotas.appendChild(notasInput);
+    tr.appendChild(tdNotas);
+
+    var tdTs = document.createElement("td");
+    tdTs.className = "ts-cell";
+    tdTs.textContent = fmtTs(row.updatedAt);
+    tr.appendChild(tdTs);
+
+    var tdDel = document.createElement("td");
+    tdDel.className = "row-actions";
+    var delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "del-btn";
+    delBtn.title = row.fixed ? "Cliente fijo — no se puede eliminar" : "Eliminar fila";
+    delBtn.textContent = "✕";
+    delBtn.disabled = !!row.fixed;
+    delBtn.addEventListener("click", function () {
+      if (row.fixed) return;
+      monthData.ingresos = monthData.ingresos.filter(function (r) { return r.id !== row.id; });
+      save();
+      renderMonthPanel();
+      renderMonthStrip();
+    });
+    tdDel.appendChild(delBtn);
+    tr.appendChild(tdDel);
+
+    return tr;
+  }
+
+  function buildExcepcionalRow(row, monthData) {
+    var tr = document.createElement("tr");
+    tr.className = row.cobrado ? "paid" : "";
+
+    function touch() { row.updatedAt = now(); save(); }
+
+    var tdCliente = document.createElement("td");
+    var clienteInput = document.createElement("input");
+    clienteInput.type = "text";
+    clienteInput.value = row.cliente;
+    clienteInput.setAttribute("list", "clientes-list");
+    clienteInput.placeholder = "Cliente";
+    clienteInput.addEventListener("input", function () { row.cliente = clienteInput.value; touch(); refreshComputed(); });
+    tdCliente.appendChild(clienteInput);
+    tr.appendChild(tdCliente);
+
+    var tdCat = document.createElement("td");
+    var catSel = document.createElement("select");
+    catSel.innerHTML = optionsHtml(CATEGORIAS_EXCEPCIONALES, row.categoria);
+    catSel.addEventListener("change", function () { row.categoria = catSel.value; touch(); });
+    tdCat.appendChild(catSel);
+    tr.appendChild(tdCat);
+
+    var tdCobrado = document.createElement("td");
+    var cobradoBtn = document.createElement("button");
+    cobradoBtn.type = "button";
+    cobradoBtn.className = "chip-toggle" + (row.cobrado ? " on" : "");
+    cobradoBtn.innerHTML = '<span class="dot"></span>' + (row.cobrado ? "Cobrado" : "Pendiente");
+    cobradoBtn.addEventListener("click", function () { row.cobrado = !row.cobrado; touch(); renderMonthPanel(); renderMonthStrip(); });
+    tdCobrado.appendChild(cobradoBtn);
+    tr.appendChild(tdCobrado);
+
+    var tdFecha = document.createElement("td");
+    var fechaInput = document.createElement("input");
+    fechaInput.type = "date";
+    fechaInput.value = row.fecha;
+    fechaInput.addEventListener("input", function () { row.fecha = fechaInput.value; touch(); });
+    tdFecha.appendChild(fechaInput);
+    tr.appendChild(tdFecha);
+
+    var tdMetodo = document.createElement("td");
+    var metodoSel = document.createElement("select");
+    metodoSel.innerHTML = optionsHtml(METODOS, row.metodo);
+    metodoSel.addEventListener("change", function () { row.metodo = metodoSel.value; touch(); });
+    tdMetodo.appendChild(metodoSel);
+    tr.appendChild(tdMetodo);
+
+    var tdCobradoPor = document.createElement("td");
+    tdCobradoPor.appendChild(buildCobradoPorSelect(row, touch));
+    tr.appendChild(tdCobradoPor);
+
+    var tdMonto = document.createElement("td");
+    var montoInput = document.createElement("input");
+    montoInput.type = "number";
+    montoInput.step = "0.01";
+    montoInput.value = row.monto;
+    montoInput.addEventListener("input", function () { row.monto = montoInput.value; touch(); refreshComputed(); });
+    tdMonto.appendChild(montoInput);
+    tr.appendChild(tdMonto);
+
+    var tdMoneda = document.createElement("td");
+    var monedaSel = document.createElement("select");
+    monedaSel.innerHTML = optionsHtml(["UYU", "USD"], row.moneda);
+    monedaSel.addEventListener("change", function () { row.moneda = monedaSel.value; touch(); refreshComputed(); });
+    tdMoneda.appendChild(monedaSel);
+    tr.appendChild(tdMoneda);
+
+    var tdPagado = document.createElement("td");
+    tdPagado.appendChild(buildPagadoSelect(row, touch, false));
+    tr.appendChild(tdPagado);
+
+    var tdNotas = document.createElement("td");
+    var notasInput = document.createElement("input");
+    notasInput.type = "text";
+    notasInput.value = row.notas;
+    notasInput.addEventListener("input", function () { row.notas = notasInput.value; touch(); });
+    tdNotas.appendChild(notasInput);
+    tr.appendChild(tdNotas);
+
+    var tdTs = document.createElement("td");
+    tdTs.className = "ts-cell";
+    tdTs.textContent = fmtTs(row.updatedAt);
+    tr.appendChild(tdTs);
+
+    var tdDel = document.createElement("td");
+    tdDel.className = "row-actions";
+    var delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "del-btn";
+    delBtn.title = "Eliminar fila";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener("click", function () {
+      monthData.excepcionales = monthData.excepcionales.filter(function (r) { return r.id !== row.id; });
+      save();
+      renderMonthPanel();
+      renderMonthStrip();
+    });
+    tdDel.appendChild(delBtn);
+    tr.appendChild(tdDel);
+
+    return tr;
+  }
+
+  function buildEgresoRow(row, monthData) {
+    var tr = document.createElement("tr");
+    tr.className = row.fixed ? "fixed-row" : "";
+
+    function touch() { row.updatedAt = now(); save(); }
+
+    var tdFecha = document.createElement("td");
+    var fechaInput = document.createElement("input");
+    fechaInput.type = "date";
+    fechaInput.value = row.fecha;
+    fechaInput.addEventListener("input", function () { row.fecha = fechaInput.value; touch(); });
+    tdFecha.appendChild(fechaInput);
+    tr.appendChild(tdFecha);
+
+    var tdCat = document.createElement("td");
+    var catSel = document.createElement("select");
+    catSel.innerHTML = optionsHtml(CATEGORIAS_EGRESOS, row.categoria);
+    catSel.addEventListener("change", function () { row.categoria = catSel.value; touch(); refreshComputed(); });
+    tdCat.appendChild(catSel);
+    tr.appendChild(tdCat);
+
+    var tdConcepto = document.createElement("td");
+    tdConcepto.className = "concepto-fixed";
+    var conceptoInput = document.createElement("input");
+    conceptoInput.type = "text";
+    conceptoInput.value = row.concepto || "";
+    conceptoInput.addEventListener("input", function () { row.concepto = conceptoInput.value; touch(); });
+    tdConcepto.appendChild(conceptoInput);
+    tr.appendChild(tdConcepto);
+
+    var tdMoneda = document.createElement("td");
+    var monedaSel = document.createElement("select");
+    monedaSel.innerHTML = optionsHtml(["UYU", "USD"], row.moneda);
+    monedaSel.addEventListener("change", function () { row.moneda = monedaSel.value; touch(); refreshComputed(); });
+    tdMoneda.appendChild(monedaSel);
+    tr.appendChild(tdMoneda);
+
+    var tdMonto = document.createElement("td");
+    var montoInput = document.createElement("input");
+    montoInput.type = "number";
+    montoInput.step = "0.01";
+    montoInput.value = row.monto;
+    montoInput.addEventListener("input", function () { row.monto = montoInput.value; touch(); refreshComputed(); });
+    tdMonto.appendChild(montoInput);
+    tr.appendChild(tdMonto);
+
+    var tdMetodo = document.createElement("td");
+    var metodoSel = document.createElement("select");
+    metodoSel.innerHTML = optionsHtml(METODOS, row.metodo);
+    metodoSel.addEventListener("change", function () { row.metodo = metodoSel.value; touch(); });
+    tdMetodo.appendChild(metodoSel);
+    tr.appendChild(tdMetodo);
+
+    var tdNotas = document.createElement("td");
+    var notasInput = document.createElement("input");
+    notasInput.type = "text";
+    notasInput.value = row.notas || "";
+    notasInput.addEventListener("input", function () { row.notas = notasInput.value; touch(); });
+    tdNotas.appendChild(notasInput);
+    tr.appendChild(tdNotas);
+
+    var tdTs = document.createElement("td");
+    tdTs.className = "ts-cell";
+    tdTs.textContent = fmtTs(row.updatedAt);
+    tr.appendChild(tdTs);
+
+    var tdDel = document.createElement("td");
+    tdDel.className = "row-actions";
+    var delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "del-btn";
+    delBtn.title = row.fixed ? "Gasto fijo — no se puede eliminar" : "Eliminar fila";
+    delBtn.textContent = "✕";
+    delBtn.disabled = !!row.fixed;
+    delBtn.addEventListener("click", function () {
+      if (row.fixed) return;
+      monthData.egresos = monthData.egresos.filter(function (r) { return r.id !== row.id; });
+      save();
+      renderMonthPanel();
+      renderMonthStrip();
+    });
+    tdDel.appendChild(delBtn);
+    tr.appendChild(tdDel);
+
+    return tr;
+  }
+
+  function buildBpsRow(row, monthData) {
+    var tr = document.createElement("tr");
+    tr.className = row.fixed ? "fixed-row" : "";
+
+    function touch() { row.updatedAt = now(); save(); }
+
+    var tdConcepto = document.createElement("td");
+    tdConcepto.className = "concepto-fixed";
+    var conceptoInput = document.createElement("input");
+    conceptoInput.type = "text";
+    conceptoInput.value = row.concepto || "";
+    conceptoInput.addEventListener("input", function () { row.concepto = conceptoInput.value; touch(); });
+    tdConcepto.appendChild(conceptoInput);
+    tr.appendChild(tdConcepto);
+
+    var tdFecha = document.createElement("td");
+    var fechaInput = document.createElement("input");
+    fechaInput.type = "date";
+    fechaInput.value = row.fecha;
+    fechaInput.addEventListener("input", function () { row.fecha = fechaInput.value; touch(); });
+    tdFecha.appendChild(fechaInput);
+    tr.appendChild(tdFecha);
+
+    var tdMoneda = document.createElement("td");
+    var monedaSel = document.createElement("select");
+    monedaSel.innerHTML = optionsHtml(["UYU", "USD"], row.moneda);
+    monedaSel.addEventListener("change", function () { row.moneda = monedaSel.value; touch(); });
+    tdMoneda.appendChild(monedaSel);
+    tr.appendChild(tdMoneda);
+
+    var tdMonto = document.createElement("td");
+    var montoInput = document.createElement("input");
+    montoInput.type = "number";
+    montoInput.step = "0.01";
+    montoInput.value = row.monto;
+    montoInput.addEventListener("input", function () { row.monto = montoInput.value; touch(); });
+    tdMonto.appendChild(montoInput);
+    tr.appendChild(tdMonto);
+
+    var tdMetodo = document.createElement("td");
+    var metodoSel = document.createElement("select");
+    metodoSel.innerHTML = optionsHtml(METODOS, row.metodo);
+    metodoSel.addEventListener("change", function () { row.metodo = metodoSel.value; touch(); });
+    tdMetodo.appendChild(metodoSel);
+    tr.appendChild(tdMetodo);
+
+    var tdPagado = document.createElement("td");
+    tdPagado.appendChild(buildPagadoSelect(row, touch, false));
+    tr.appendChild(tdPagado);
+
+    var tdNotas = document.createElement("td");
+    var notasInput = document.createElement("input");
+    notasInput.type = "text";
+    notasInput.value = row.notas || "";
+    notasInput.addEventListener("input", function () { row.notas = notasInput.value; touch(); });
+    tdNotas.appendChild(notasInput);
+    tr.appendChild(tdNotas);
+
+    var tdTs = document.createElement("td");
+    tdTs.className = "ts-cell";
+    tdTs.textContent = fmtTs(row.updatedAt);
+    tr.appendChild(tdTs);
+
+    var tdDel = document.createElement("td");
+    tdDel.className = "row-actions";
+    var delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "del-btn";
+    delBtn.title = row.fixed ? "Fijo — no se puede eliminar" : "Eliminar fila";
+    delBtn.textContent = "✕";
+    delBtn.disabled = !!row.fixed;
+    delBtn.addEventListener("click", function () {
+      if (row.fixed) return;
+      monthData.bps = monthData.bps.filter(function (r) { return r.id !== row.id; });
+      save();
+      renderMonthPanel();
+    });
+    tdDel.appendChild(delBtn);
+    tr.appendChild(tdDel);
+
+    return tr;
+  }
+
+  function statHtml(label, value, tone) {
+    var cls = tone === "pos" ? "pos" : (tone === "neg" ? "neg" : "");
+    return '<div class="stat"><div class="label">' + esc(label) + '</div><div class="value ' + cls + '">' + esc(value) + "</div></div>";
+  }
+
+  function renderStats() {
+    if (!statsHost) return;
+    var monthData = state.months[activeMonth];
+    var s = monthStats(monthData);
+    var pendientes = monthData.ingresos.concat(monthData.excepcionales)
+      .filter(function (r) { return !r.cobrado && r.cliente && Number(r.monto) > 0; }).length;
+    statsHost.innerHTML =
+      statHtml("Ingresos cobrados UYU", fmtMoney(s.ingUYU), "pos") +
+      statHtml("Egresos UYU", fmtMoney(s.egUYU)) +
+      statHtml("Resultado UYU", fmtMoney(s.ingUYU - s.egUYU), (s.ingUYU - s.egUYU) < 0 ? "neg" : "pos") +
+      statHtml("Cobros pendientes", String(pendientes));
+  }
+
+  function statsTableRow(cells, opts) {
+    opts = opts || {};
+    return "<tr" + (opts.cls ? ' class="' + opts.cls + '"' : "") + ">" + cells.join("") + "</tr>";
+  }
+
+  function renderStatsTables() {
+    if (!statsTablesHost) return;
+    var monthData = state.months[activeMonth];
+    var clientRows = clientStatsRows(monthData);
+    var catRows = categoriaStatsRows(monthData.egresos);
+    var s = monthStats(monthData);
+
+    var html = '<div class="stats-tables-grid">';
+
+    html += '<div class="tablewrap"><table class="stats-table"><thead><tr><th>Cliente</th><th>Moneda</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th></tr></thead><tbody>';
+    if (!clientRows.length) {
+      html += '<tr><td colspan="5" class="hint" style="text-align:center;padding:16px;">Sin datos todavía</td></tr>';
+    } else {
+      clientRows.forEach(function (r) {
+        html += statsTableRow([
+          "<td>" + esc(r.cliente) + "</td>",
+          "<td>" + r.moneda + "</td>",
+          '<td class="num">' + fmtMoney(r.total) + "</td>",
+          '<td class="num" style="color:var(--good)">' + fmtMoney(r.cobrado) + "</td>",
+          '<td class="num" style="color:' + (r.pendiente > 0 ? "var(--warn)" : "inherit") + '">' + fmtMoney(r.pendiente) + "</td>"
+        ]);
+      });
+    }
+    html += "</tbody></table></div>";
+
+    html += '<div class="tablewrap"><table class="stats-table"><thead><tr><th>Categoría</th><th>Moneda</th><th>Total</th></tr></thead><tbody>';
+    if (!catRows.length) {
+      html += '<tr><td colspan="3" class="hint" style="text-align:center;padding:16px;">Sin datos todavía</td></tr>';
+    } else {
+      catRows.forEach(function (r) {
+        html += statsTableRow([
+          "<td>" + esc(r.categoria) + "</td>",
+          "<td>" + r.moneda + "</td>",
+          '<td class="num">' + fmtMoney(r.total) + "</td>"
+        ]);
+      });
+    }
+    html += "</tbody></table></div>";
+    html += "</div>";
+
+    var rUYU = s.ingUYU - s.egUYU, rUSD = s.ingUSD - s.egUSD;
+    html += '<div class="tablewrap"><table class="stats-table"><thead><tr><th>Balance</th><th>UYU</th><th>USD</th></tr></thead><tbody>';
+    html += statsTableRow(["<td>Ingresos cobrados</td>", '<td class="num">' + fmtMoney(s.ingUYU) + "</td>", '<td class="num">' + fmtMoney(s.ingUSD) + "</td>"]);
+    html += statsTableRow(["<td>Egresos</td>", '<td class="num">' + fmtMoney(s.egUYU) + "</td>", '<td class="num">' + fmtMoney(s.egUSD) + "</td>"]);
+    html += statsTableRow([
+      "<td>Resultado</td>",
+      '<td class="num" style="color:' + (rUYU < 0 ? "var(--danger)" : "var(--good)") + '">' + fmtMoney(rUYU) + "</td>",
+      '<td class="num" style="color:' + (rUSD < 0 ? "var(--danger)" : "var(--good)") + '">' + fmtMoney(rUSD) + "</td>"
+    ], { cls: "total-row" });
+    html += "</tbody></table></div>";
+
+    statsTablesHost.innerHTML = html;
+  }
+
+  function renderDebtSection() {
+    if (!debtHost) return;
+    var monthData = state.months[activeMonth];
+    var bal = theoBrunoBalance(monthData);
+    var html = "";
+    ["UYU", "USD"].forEach(function (cur) {
+      var b = bal[cur];
+      var totalCobrado = b.theo + b.bruno + b.virtus + b.sinAsignar;
+      if (totalCobrado <= 0) return;
+      var diff = b.theo - b.bruno;
+      var half = Math.abs(diff) / 2;
+      var msg;
+      if (half < 0.005) {
+        msg = '<span class="debt-even">Están parejos</span>';
+      } else {
+        var deudor = diff > 0 ? "Theo" : "Bruno";
+        var acreedor = diff > 0 ? "Bruno" : "Theo";
+        msg = "<strong>" + deudor + "</strong> le debe a <strong>" + acreedor + "</strong> <span class=\"debt-amount\">" + fmtMoney(half) + " " + cur + "</span>";
+      }
+      html += '<div class="debt-card"><div class="debt-cur">' + cur + '</div><div class="debt-msg">' + msg + '</div>' +
+        '<div class="debt-detail">Theo cobró ' + fmtMoney(b.theo) + " · Bruno cobró " + fmtMoney(b.bruno) +
+        (b.virtus > 0 ? " · Virtus (cuenta común) recibió " + fmtMoney(b.virtus) : "") +
+        (b.sinAsignar > 0 ? ' · <span class="debt-warn">' + fmtMoney(b.sinAsignar) + " " + cur + ' sin asignar</span>' : "") +
+        "</div></div>";
+    });
+    if (!html) html = '<div class="hint" style="padding:6px 0;">Todavía no hay cobros marcados "Cobrado" este mes.</div>';
+    else html = '<div class="debt-grid">' + html + "</div>";
+    debtHost.innerHTML = html;
+  }
+
+  function refreshComputed() { renderStats(); renderStatsTables(); renderDebtSection(); }
+
+  function fixedRowsFirst(rows) {
+    return rows.slice().sort(function (a, b) { return (b.fixed ? 1 : 0) - (a.fixed ? 1 : 0); });
+  }
+
+  function renderMonthPanel() {
+    var monthData = state.months[activeMonth];
+    var monthIdx = MES_KEYS.indexOf(activeMonth);
+
+    var wrap = document.createElement("div");
+    wrap.className = "panel active";
+
+    var stats = document.createElement("div");
+    stats.className = "summary-row";
+    wrap.appendChild(stats);
+    statsHost = stats;
+
+    // ---- Ingresos fijos ----
+    var secIng = document.createElement("div");
+    secIng.className = "section";
+    secIng.innerHTML =
+      '<div class="section-head"><h2>Ingresos <span class="tag">' + MESES[monthIdx] + '</span></h2>' +
+      '<span class="hint">Clientes fijos de Virtus</span></div>';
+    var tableWrapIng = document.createElement("div");
+    tableWrapIng.className = "tablewrap";
+    var tableIng = document.createElement("table");
+    tableIng.innerHTML =
+      "<thead><tr>" +
+      '<th style="width:110px">Cliente</th><th style="width:84px">Cobrado</th><th style="width:126px">Fecha de pago</th>' +
+      '<th style="width:118px">Método</th><th style="width:110px">Cobrado por</th>' +
+      '<th style="width:100px">Monto</th><th style="width:64px">Moneda</th><th style="width:84px">Pagado</th><th style="width:150px">Notas</th>' +
+      '<th style="width:112px">Última edición</th><th class="row-actions"></th>' +
+      "</tr></thead>";
+    var tbodyIng = document.createElement("tbody");
+    fixedRowsFirst(monthData.ingresos).forEach(function (row) {
+      tbodyIng.appendChild(buildIngresoRow(row, monthData));
+    });
+    tableIng.appendChild(tbodyIng);
+    tableWrapIng.appendChild(tableIng);
+    secIng.appendChild(tableWrapIng);
+    var tbIng = document.createElement("div");
+    tbIng.className = "toolbar";
+    var addIngBtn = document.createElement("button");
+    addIngBtn.className = "add-btn";
+    addIngBtn.type = "button";
+    addIngBtn.textContent = "+ Agregar cobro";
+    addIngBtn.addEventListener("click", function () {
+      monthData.ingresos.push(newIngresoRow(""));
+      save();
+      renderMonthPanel();
+    });
+    tbIng.appendChild(addIngBtn);
+    addHint(tbIng, 'Marcá "Cobrado" cuando el cliente pagó — la fila se pinta de verde. El mes se pone verde cuando todos los clientes están cobrados.');
+    secIng.appendChild(tbIng);
+    wrap.appendChild(secIng);
+
+    // ---- Excepcionales ----
+    var secExc = document.createElement("div");
+    secExc.className = "section excepcionales";
+    secExc.innerHTML =
+      '<div class="section-head"><h2>Excepcionales <span class="tag">Web · Otros</span></h2>' +
+      '<span class="hint">Ingresos fuera de los clientes fijos</span></div>';
+    var tableWrapExc = document.createElement("div");
+    tableWrapExc.className = "tablewrap";
+    var tableExc = document.createElement("table");
+    tableExc.innerHTML =
+      "<thead><tr>" +
+      '<th style="width:110px">Cliente</th><th style="width:96px">Categoría</th><th style="width:84px">Cobrado</th>' +
+      '<th style="width:126px">Fecha de pago</th><th style="width:118px">Método</th><th style="width:110px">Cobrado por</th>' +
+      '<th style="width:100px">Monto</th><th style="width:64px">Moneda</th><th style="width:84px">Pagado</th>' +
+      '<th style="width:140px">Notas</th><th style="width:112px">Última edición</th><th class="row-actions"></th>' +
+      "</tr></thead>";
+    var tbodyExc = document.createElement("tbody");
+    monthData.excepcionales.forEach(function (row) {
+      tbodyExc.appendChild(buildExcepcionalRow(row, monthData));
+    });
+    tableExc.appendChild(tbodyExc);
+    tableWrapExc.appendChild(tableExc);
+    secExc.appendChild(tableWrapExc);
+    var tbExc = document.createElement("div");
+    tbExc.className = "toolbar";
+    var addExcBtn = document.createElement("button");
+    addExcBtn.className = "add-btn";
+    addExcBtn.type = "button";
+    addExcBtn.textContent = "+ Agregar excepcional";
+    addExcBtn.addEventListener("click", function () {
+      monthData.excepcionales.push(newExcepcionalRow());
+      save();
+      renderMonthPanel();
+    });
+    tbExc.appendChild(addExcBtn);
+    addHint(tbExc, "Cobros puntuales: trabajos de Web u otros no recurrentes.");
+    secExc.appendChild(tbExc);
+    wrap.appendChild(secExc);
+
+    // ---- Egresos ----
+    var secEg = document.createElement("div");
+    secEg.className = "section";
+    secEg.innerHTML =
+      '<div class="section-head"><h2>Egresos <span class="tag">' + MESES[monthIdx] + '</span></h2>' +
+      '<span class="hint">Gastos del mes — fijos ya cargados</span></div>';
+    var tableWrapEg = document.createElement("div");
+    tableWrapEg.className = "tablewrap";
+    var tableEg = document.createElement("table");
+    tableEg.innerHTML =
+      "<thead><tr>" +
+      '<th style="width:120px">Fecha</th><th style="width:150px">Categoría</th><th style="width:150px">Concepto</th>' +
+      '<th style="width:64px">Moneda</th><th style="width:100px">Monto</th><th style="width:118px">Método</th>' +
+      '<th style="width:140px">Notas</th><th style="width:112px">Última edición</th><th class="row-actions"></th>' +
+      "</tr></thead>";
+    var tbodyEg = document.createElement("tbody");
+    fixedRowsFirst(monthData.egresos).forEach(function (row) {
+      tbodyEg.appendChild(buildEgresoRow(row, monthData));
+    });
+    tableEg.appendChild(tbodyEg);
+    tableWrapEg.appendChild(tableEg);
+    secEg.appendChild(tableWrapEg);
+    var tbEg = document.createElement("div");
+    tbEg.className = "toolbar";
+    var addEgBtn = document.createElement("button");
+    addEgBtn.className = "add-btn";
+    addEgBtn.type = "button";
+    addEgBtn.textContent = "+ Agregar gasto";
+    addEgBtn.addEventListener("click", function () {
+      monthData.egresos.push(newEgresoRow());
+      save();
+      renderMonthPanel();
+    });
+    tbEg.appendChild(addEgBtn);
+    addHint(tbEg, "Adobe, Chat GPT, Claude, Videos y Publicidad ya están precargados.");
+    secEg.appendChild(tbEg);
+    wrap.appendChild(secEg);
+
+    // ---- BPS (aparte, no afecta el balance de Virtus) ----
+    var secBps = document.createElement("div");
+    secBps.className = "section bps-section";
+    secBps.innerHTML =
+      '<div class="section-head"><h2>BPS <span class="tag">aparte</span></h2>' +
+      '<span class="hint">Acuerdo entre Theo y Bruno — no suma ni resta en la contaduría de Virtus</span></div>';
+    var tableWrapBps = document.createElement("div");
+    tableWrapBps.className = "tablewrap";
+    var tableBps = document.createElement("table");
+    tableBps.innerHTML =
+      "<thead><tr>" +
+      '<th style="width:150px">Concepto</th><th style="width:120px">Fecha</th><th style="width:64px">Moneda</th>' +
+      '<th style="width:100px">Monto</th><th style="width:118px">Método</th><th style="width:84px">Pagado</th>' +
+      '<th style="width:150px">Notas</th><th style="width:112px">Última edición</th><th class="row-actions"></th>' +
+      "</tr></thead>";
+    var tbodyBps = document.createElement("tbody");
+    fixedRowsFirst(monthData.bps).forEach(function (row) {
+      tbodyBps.appendChild(buildBpsRow(row, monthData));
+    });
+    tableBps.appendChild(tbodyBps);
+    tableWrapBps.appendChild(tableBps);
+    secBps.appendChild(tableWrapBps);
+    var tbBps = document.createElement("div");
+    tbBps.className = "toolbar";
+    var addBpsBtn = document.createElement("button");
+    addBpsBtn.className = "add-btn";
+    addBpsBtn.type = "button";
+    addBpsBtn.textContent = "+ Agregar";
+    addBpsBtn.addEventListener("click", function () {
+      monthData.bps.push(newBpsRow());
+      save();
+      renderMonthPanel();
+    });
+    tbBps.appendChild(addBpsBtn);
+    addHint(tbBps, 'Marcá "Pagado: Sí" cuando se abone. Este monto nunca entra en los totales ni en el balance de Virtus.');
+    secBps.appendChild(tbBps);
+    wrap.appendChild(secBps);
+
+    // ---- Estadísticas del mes ----
+    var secStats = document.createElement("div");
+    secStats.className = "section";
+    secStats.innerHTML = '<div class="section-head"><h2>Estadísticas del mes</h2><span class="hint">Por cliente, por categoría y balance</span></div>';
+    var statsTablesDiv = document.createElement("div");
+    secStats.appendChild(statsTablesDiv);
+    wrap.appendChild(secStats);
+    statsTablesHost = statsTablesDiv;
+
+    // ---- ¿Quién le debe a quién? ----
+    var secDebt = document.createElement("div");
+    secDebt.className = "section";
+    secDebt.innerHTML = '<div class="section-head"><h2>¿Quién le debe a quién?</h2><span class="hint">Theo/Bruno repartido 50/50 — lo cobrado por Virtus queda en la cuenta común y no entra en este reparto</span></div>';
+    var debtDiv = document.createElement("div");
+    secDebt.appendChild(debtDiv);
+    wrap.appendChild(secDebt);
+    debtHost = debtDiv;
+
+    monthPanelsHost.innerHTML = "";
+    monthPanelsHost.appendChild(wrap);
+    refreshComputed();
+  }
+
+  // ================= RESUMEN =================
+  var resumenBody = document.getElementById("resumen-body");
+  var resumenStats = document.getElementById("resumen-stats");
+  var resumenChartsHost = document.getElementById("resumen-charts");
+  var panelResumen = document.getElementById("panel-resumen");
+
+  function renderResumen() {
+    var grand = { ingUYU: 0, egUYU: 0, ingUSD: 0, egUSD: 0 };
+    var ingUYUByMonth = [], egUYUByMonth = [], ingUSDByMonth = [], egUSDByMonth = [];
+    var clienteAggYear = { UYU: {}, USD: {} };
+
+    resumenBody.innerHTML = "";
+
+    MES_KEYS.forEach(function (key, i) {
+      var monthData = state.months[key];
+      var s = monthStats(monthData);
+      grand.ingUYU += s.ingUYU; grand.egUYU += s.egUYU;
+      grand.ingUSD += s.ingUSD; grand.egUSD += s.egUSD;
+      ingUYUByMonth.push(s.ingUYU); egUYUByMonth.push(s.egUYU);
+      ingUSDByMonth.push(s.ingUSD); egUSDByMonth.push(s.egUSD);
+
+      var ca = aggByClient(monthData);
+      ["UYU", "USD"].forEach(function (cur) {
+        Object.keys(ca[cur]).forEach(function (name) {
+          clienteAggYear[cur][name] = (clienteAggYear[cur][name] || 0) + ca[cur][name];
+        });
+      });
+
+      var resUYU = s.ingUYU - s.egUYU;
+      var resUSD = s.ingUSD - s.egUSD;
+      var tr = document.createElement("tr");
+      tr.className = key === todayMonthKey ? "current-month" : "";
+      tr.innerHTML =
+        "<td>" + MESES[i] + "</td>" +
+        '<td class="num cur-col-uyu">' + fmtMoney(s.ingUYU) + "</td>" +
+        '<td class="num">' + fmtMoney(s.egUYU) + "</td>" +
+        '<td class="num" style="color:' + (resUYU < 0 ? "var(--danger)" : "var(--good)") + '">' + fmtMoney(resUYU) + "</td>" +
+        '<td class="num cur-col-usd">' + fmtMoney(s.ingUSD) + "</td>" +
+        '<td class="num">' + fmtMoney(s.egUSD) + "</td>" +
+        '<td class="num" style="color:' + (resUSD < 0 ? "var(--danger)" : "var(--good)") + '">' + fmtMoney(resUSD) + "</td>";
+      resumenBody.appendChild(tr);
+    });
+
+    var totalRow = document.createElement("tr");
+    totalRow.className = "total-row";
+    var grandResUYU = grand.ingUYU - grand.egUYU;
+    var grandResUSD = grand.ingUSD - grand.egUSD;
+    totalRow.innerHTML =
+      "<td>Total 2026</td>" +
+      '<td class="num cur-col-uyu">' + fmtMoney(grand.ingUYU) + "</td>" +
+      '<td class="num">' + fmtMoney(grand.egUYU) + "</td>" +
+      '<td class="num">' + fmtMoney(grandResUYU) + "</td>" +
+      '<td class="num cur-col-usd">' + fmtMoney(grand.ingUSD) + "</td>" +
+      '<td class="num">' + fmtMoney(grand.egUSD) + "</td>" +
+      '<td class="num">' + fmtMoney(grandResUSD) + "</td>";
+    resumenBody.appendChild(totalRow);
+
+    var pendientesTotal = MES_KEYS.reduce(function (acc, key) {
+      var m = state.months[key];
+      return acc + m.ingresos.concat(m.excepcionales).filter(function (r) { return !r.cobrado && r.cliente && Number(r.monto) > 0; }).length;
+    }, 0);
+
+    resumenStats.innerHTML =
+      statHtml("Resultado UYU (2026)", fmtMoney(grandResUYU), grandResUYU < 0 ? "neg" : "pos") +
+      statHtml("Resultado USD (2026)", fmtMoney(grandResUSD), grandResUSD < 0 ? "neg" : "pos") +
+      statHtml("Cobros pendientes (año)", String(pendientesTotal)) +
+      statHtml("Mes actual", MESES[MES_KEYS.indexOf(todayMonthKey)]);
+
+    var todayIdx = MES_KEYS.indexOf(todayMonthKey);
+
+    function trendBlock(valuesUYU, valuesUSD, color, aria) {
+      var out = "";
+      if (valuesUYU.some(function (v) { return v > 0; })) {
+        out += '<div class="chart-row"><div class="chart-currency-label">UYU</div>' +
+          svgBars(MESES_ABR, [{ values: valuesUYU, color: color }], { height: 220, showValues: true, highlightIndex: todayIdx, ariaLabel: aria + " UYU" }) + '</div>';
+      }
+      if (valuesUSD.some(function (v) { return v > 0; })) {
+        out += '<div class="chart-row"><div class="chart-currency-label">USD</div>' +
+          svgBars(MESES_ABR, [{ values: valuesUSD, color: color }], { height: 220, showValues: true, highlightIndex: todayIdx, ariaLabel: aria + " USD" }) + '</div>';
+      }
+      return out || emptyChart();
+    }
+
+    function balanceGeneralBlock(cur, ingArr, egArr) {
+      if (!ingArr.some(function (v) { return v > 0; }) && !egArr.some(function (v) { return v > 0; })) return "";
+      return '<div class="chart-row"><div class="chart-currency-label">' + cur + '</div>' +
+        legendHtml([{ name: "Ingresos", color: "var(--flow-in)" }, { name: "Egresos", color: "var(--flow-out)" }]) +
+        svgBars(MESES_ABR, [
+          { name: "Ingresos", color: "var(--flow-in)", values: ingArr },
+          { name: "Egresos", color: "var(--flow-out)", values: egArr }
+        ], { height: 230, highlightIndex: todayIdx, ariaLabel: "Balance general " + cur }) + '</div>';
+    }
+
+    var balanceGeneralHtml = balanceGeneralBlock("UYU", ingUYUByMonth, egUYUByMonth) + balanceGeneralBlock("USD", ingUSDByMonth, egUSDByMonth);
+
+    var grid = document.createElement("div");
+    grid.className = "charts-grid";
+    grid.innerHTML =
+      chartCard("Balance general — todos los meses", "ingresos cobrados vs. egresos", balanceGeneralHtml || emptyChart()) +
+      chartCard("Ingresos mensuales", "solo cobrado, tendencia del año", trendBlock(ingUYUByMonth, ingUSDByMonth, "var(--flow-in)", "Ingresos mensuales")) +
+      chartCard("Egresos mensuales", "tendencia del año", trendBlock(egUYUByMonth, egUSDByMonth, "var(--flow-out)", "Egresos mensuales")) +
+      chartCard("Ingresos por cliente — año", "acumulado, cobrado", currencySplitChart(clienteAggYear, CLIENTES_FIJOS, CLIENT_COLOR, CLIENT_FALLBACK_COLOR, "Ingresos por cliente año"));
+
+    resumenChartsHost.innerHTML = "";
+    resumenChartsHost.appendChild(grid);
+  }
+
+  // ================= TABS ROOT =================
+  function renderAll() {
+    renderMonthStrip();
+    if (activeTab === "resumen") {
+      monthPanelsHost.innerHTML = "";
+      panelResumen.classList.add("active");
+      document.getElementById("resumen-btn").classList.add("active");
+      renderResumen();
+    } else {
+      panelResumen.classList.remove("active");
+      document.getElementById("resumen-btn").classList.remove("active");
+      renderMonthPanel();
+    }
+  }
+
+  // ---------- datalist clientes ----------
+  var datalist = document.createElement("datalist");
+  datalist.id = "clientes-list";
+  CLIENTES_FIJOS.forEach(function (c) {
+    var opt = document.createElement("option");
+    opt.value = c;
+    datalist.appendChild(opt);
+  });
+  document.body.appendChild(datalist);
+
+  // ================= NUBE: carga inicial + tiempo real =================
+  var appRoot = document.getElementById("app-root");
+  var loadingScreen = document.getElementById("loading-screen");
+  var lockScreen = document.getElementById("lock-screen");
+  var lockForm = document.getElementById("lock-form");
+  var lockInput = document.getElementById("lock-input");
+  var lockError = document.getElementById("lock-error");
+
+  function startApp() {
+    lockScreen.className = "app-hidden";
+    loadingScreen.className = "";
+
+    if (!window.supabase || CONFIG.SUPABASE_URL.indexOf("PONE_TU_") === 0) {
+      loadingScreen.innerHTML = '<div class="lock-card"><div class="lock-title">Falta configurar</div>' +
+        '<div class="lock-sub">Completá CONFIG.SUPABASE_URL y CONFIG.SUPABASE_ANON_KEY en index.html con los datos de tu proyecto de Supabase.</div></div>';
+      return;
+    }
+
+    supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+    supabaseClient
+      .from("contaduria_state")
+      .select("data")
+      .eq("id", ROW_ID)
+      .single()
+      .then(function (res) {
+        if (res.error || !res.data) {
+          console.error(res.error);
+          loadingScreen.innerHTML = '<div class="lock-card"><div class="lock-title">No se pudo conectar</div>' +
+            '<div class="lock-sub">Revisá que la tabla "contaduria_state" exista en Supabase y que la fila con id "main" esté creada.</div></div>';
+          return;
+        }
+        state = normalizeState(res.data.data && res.data.data.months ? res.data.data : null);
+        loadingScreen.className = "app-hidden";
+        appRoot.style.display = "";
+        renderAll();
+        subscribeRealtime();
+      });
+  }
+
+  function subscribeRealtime() {
+    supabaseClient
+      .channel("contaduria_state_changes")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "contaduria_state", filter: "id=eq." + ROW_ID }, function (payload) {
+        if (!payload.new || payload.new.updated_by === SESSION_ID) return; // es nuestro propio guardado, no re-renderizar
+        state = normalizeState(payload.new.data);
+        renderAll();
+        setSyncBadge("Actualizado por otro dispositivo");
+        setTimeout(function () { setSyncBadge("Sincronizado en la nube"); }, 2500);
+      })
+      .subscribe();
+  }
+
+  lockForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (lockInput.value === CONFIG.SHARED_PASSWORD) {
+      try { localStorage.setItem(LOCK_KEY, "1"); } catch (err) {}
+      startApp();
+    } else {
+      lockError.textContent = "Clave incorrecta";
+      lockInput.value = "";
+      lockInput.focus();
+    }
+  });
+
+  var alreadyUnlocked = false;
+  try { alreadyUnlocked = localStorage.getItem(LOCK_KEY) === "1"; } catch (err) {}
+  if (alreadyUnlocked) {
+    startApp();
+  } else {
+    lockInput.focus();
+  }
+})();
+</script>
+</body>
+</html>
