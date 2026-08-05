@@ -378,6 +378,10 @@
   <!-- RESUMEN -->
   <section class="panel" id="panel-resumen">
     <div class="summary-row" id="resumen-stats"></div>
+
+    <div class="section-head"><h2>¿Quién le debe a quién? <span class="tag">Acumulado — todos los meses</span></h2><span class="hint">Theo/Bruno repartido 50/50 — Virtus y lo ya "Pagado: Sí" no entran en el reparto</span></div>
+    <div id="resumen-debt" style="margin-bottom:20px;"></div>
+
     <div class="tablewrap">
       <table class="resumen-table">
         <thead>
@@ -848,6 +852,21 @@
       else res[cur].sinAsignar += monto;
     });
     return res;
+  }
+
+  // igual que theoBrunoBalance pero sumado en todos los meses — el balance es acumulado, no se resetea cada mes
+  function theoBrunoBalanceAll() {
+    var total = { UYU: { theo: 0, bruno: 0, virtus: 0, sinAsignar: 0 }, USD: { theo: 0, bruno: 0, virtus: 0, sinAsignar: 0 } };
+    MES_KEYS.forEach(function (k) {
+      var b = theoBrunoBalance(state.months[k]);
+      ["UYU", "USD"].forEach(function (cur) {
+        total[cur].theo += b[cur].theo;
+        total[cur].bruno += b[cur].bruno;
+        total[cur].virtus += b[cur].virtus;
+        total[cur].sinAsignar += b[cur].sinAsignar;
+      });
+    });
+    return total;
   }
 
   // ================= MONTH STRIP =================
@@ -1362,10 +1381,8 @@
     statsTablesHost.innerHTML = html;
   }
 
-  function renderDebtSection() {
-    if (!debtHost) return;
-    var monthData = state.months[activeMonth];
-    var bal = theoBrunoBalance(monthData);
+  function debtCardsHtml() {
+    var bal = theoBrunoBalanceAll();
     var html = "";
     ["UYU", "USD"].forEach(function (cur) {
       var b = bal[cur];
@@ -1387,9 +1404,13 @@
         (b.sinAsignar > 0 ? ' · <span class="debt-warn">' + fmtMoney(b.sinAsignar) + " " + cur + ' sin asignar</span>' : "") +
         "</div></div>";
     });
-    if (!html) html = '<div class="hint" style="padding:6px 0;">Todavía no hay cobros marcados "Cobrado" este mes.</div>';
-    else html = '<div class="debt-grid">' + html + "</div>";
-    debtHost.innerHTML = html;
+    if (!html) return '<div class="hint" style="padding:6px 0;">Todavía no hay cobros marcados "Cobrado" en ningún mes.</div>';
+    return '<div class="debt-grid">' + html + "</div>";
+  }
+
+  function renderDebtSection() {
+    if (!debtHost) return;
+    debtHost.innerHTML = debtCardsHtml();
   }
 
   function refreshComputed() { renderStats(); renderStatsTables(); renderDebtSection(); }
@@ -1576,7 +1597,7 @@
     // ---- ¿Quién le debe a quién? ----
     var secDebt = document.createElement("div");
     secDebt.className = "section";
-    secDebt.innerHTML = '<div class="section-head"><h2>¿Quién le debe a quién?</h2><span class="hint">Theo/Bruno repartido 50/50 — lo cobrado por Virtus, y lo ya marcado "Pagado: Sí", no entra en este reparto</span></div>';
+    secDebt.innerHTML = '<div class="section-head"><h2>¿Quién le debe a quién? <span class="tag">Acumulado — todos los meses</span></h2><span class="hint">Theo/Bruno repartido 50/50 — lo cobrado por Virtus, y lo ya marcado "Pagado: Sí", no entra en este reparto</span></div>';
     var debtDiv = document.createElement("div");
     secDebt.appendChild(debtDiv);
     wrap.appendChild(secDebt);
@@ -1594,6 +1615,9 @@
   var panelResumen = document.getElementById("panel-resumen");
 
   function renderResumen() {
+    var resumenDebtHost = document.getElementById("resumen-debt");
+    if (resumenDebtHost) resumenDebtHost.innerHTML = debtCardsHtml();
+
     var grand = { ingUYU: 0, egUYU: 0, ingUSD: 0, egUSD: 0 };
     var ingUYUByMonth = [], egUYUByMonth = [], ingUSDByMonth = [], egUSDByMonth = [];
     var clienteAggYear = { UYU: {}, USD: {} };
