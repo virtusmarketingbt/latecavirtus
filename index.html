@@ -838,6 +838,7 @@
     var res = { UYU: { theo: 0, bruno: 0, virtus: 0, sinAsignar: 0 }, USD: { theo: 0, bruno: 0, virtus: 0, sinAsignar: 0 } };
     monthData.ingresos.concat(monthData.excepcionales).forEach(function (r) {
       if (!r.cobrado) return;
+      if (r.pagado === "Sí") return; // ya se repartió entre Theo y Bruno, no vuelve a contar en el balance
       var monto = Number(r.monto) || 0;
       if (monto <= 0) return;
       var cur = r.moneda === "USD" ? "USD" : "UYU";
@@ -898,7 +899,7 @@
     return sel;
   }
 
-  function buildPagadoSelect(row, touch, gating) {
+  function buildPagadoSelect(row, touch) {
     var sel = document.createElement("select");
     sel.className = row.pagado === "Sí" ? "pagado-si" : (row.pagado === "No" ? "pagado-no" : "");
     sel.innerHTML = optionsHtml(SI_NO, row.pagado);
@@ -906,7 +907,9 @@
       row.pagado = sel.value;
       touch();
       sel.className = row.pagado === "Sí" ? "pagado-si" : (row.pagado === "No" ? "pagado-no" : "");
-      if (gating) { refreshComputed(); renderMonthStrip(); }
+      // afecta el balance de egresos (Egresos) o el reparto Theo/Bruno (Ingresos, Excepcionales)
+      refreshComputed();
+      renderMonthStrip();
     });
     return sel;
   }
@@ -972,7 +975,7 @@
     tr.appendChild(tdMoneda);
 
     var tdPagado = document.createElement("td");
-    tdPagado.appendChild(buildPagadoSelect(row, touch, false));
+    tdPagado.appendChild(buildPagadoSelect(row, touch));
     tr.appendChild(tdPagado);
 
     var tdNotas = document.createElement("td");
@@ -1077,7 +1080,7 @@
     tr.appendChild(tdMoneda);
 
     var tdPagado = document.createElement("td");
-    tdPagado.appendChild(buildPagadoSelect(row, touch, false));
+    tdPagado.appendChild(buildPagadoSelect(row, touch));
     tr.appendChild(tdPagado);
 
     var tdNotas = document.createElement("td");
@@ -1246,7 +1249,7 @@
     tr.appendChild(tdMetodo);
 
     var tdPagado = document.createElement("td");
-    tdPagado.appendChild(buildPagadoSelect(row, touch, false));
+    tdPagado.appendChild(buildPagadoSelect(row, touch));
     tr.appendChild(tdPagado);
 
     var tdNotas = document.createElement("td");
@@ -1442,7 +1445,7 @@
       renderMonthPanel();
     });
     tbIng.appendChild(addIngBtn);
-    addHint(tbIng, 'Marcá "Cobrado" cuando el cliente pagó — la fila se pinta de verde. El mes se pone verde cuando todos los clientes están cobrados.');
+    addHint(tbIng, 'Marcá "Cobrado" cuando el cliente pagó — la fila se pinta de verde. "Pagado: Sí" significa que esa plata ya se repartió entre Theo y Bruno, y deja de contar en el balance de abajo.');
     secIng.appendChild(tbIng);
     wrap.appendChild(secIng);
 
@@ -1573,7 +1576,7 @@
     // ---- ¿Quién le debe a quién? ----
     var secDebt = document.createElement("div");
     secDebt.className = "section";
-    secDebt.innerHTML = '<div class="section-head"><h2>¿Quién le debe a quién?</h2><span class="hint">Theo/Bruno repartido 50/50 — lo cobrado por Virtus queda en la cuenta común y no entra en este reparto</span></div>';
+    secDebt.innerHTML = '<div class="section-head"><h2>¿Quién le debe a quién?</h2><span class="hint">Theo/Bruno repartido 50/50 — lo cobrado por Virtus, y lo ya marcado "Pagado: Sí", no entra en este reparto</span></div>';
     var debtDiv = document.createElement("div");
     secDebt.appendChild(debtDiv);
     wrap.appendChild(secDebt);
