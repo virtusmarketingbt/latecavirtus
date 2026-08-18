@@ -1381,6 +1381,74 @@
     statsTablesHost.innerHTML = html;
   }
 
+  function fmtDateOnly(s) {
+    if (!s) return "—";
+    var parts = s.split("-");
+    if (parts.length !== 3) return s;
+    return parts[2] + "/" + parts[1] + "/" + parts[0];
+  }
+
+  function personaColor(p) {
+    if (p === "Theo") return "var(--pal-0)";
+    if (p === "Bruno") return "var(--pal-6)";
+    if (p === "Virtus") return "var(--pal-2)";
+    return "var(--warn)";
+  }
+
+  // cada renglón que hoy suma al balance Theo/Bruno: cobrado, sin repartir todavía (Pagado != "Sí")
+  function debtBreakdownRows() {
+    var rows = [];
+    MES_KEYS.forEach(function (k, idx) {
+      var monthData = state.months[k];
+      function collect(list, origen) {
+        list.forEach(function (r) {
+          if (!r.cobrado) return;
+          if (r.pagado === "Sí") return;
+          var monto = Number(r.monto) || 0;
+          if (monto <= 0) return;
+          rows.push({
+            mesIdx: idx,
+            mes: MESES_ABR[idx],
+            origen: origen,
+            cliente: (r.cliente && r.cliente.trim()) ? r.cliente.trim() : "Sin cliente",
+            fecha: r.fecha,
+            cobradoPor: r.cobradoPor || "Sin asignar",
+            monto: monto,
+            moneda: r.moneda === "USD" ? "USD" : "UYU"
+          });
+        });
+      }
+      collect(monthData.ingresos, "Ingreso");
+      collect(monthData.excepcionales, "Excepcional");
+    });
+    rows.sort(function (a, b) {
+      if (a.mesIdx !== b.mesIdx) return a.mesIdx - b.mesIdx;
+      return (a.fecha || "").localeCompare(b.fecha || "");
+    });
+    return rows;
+  }
+
+  function debtBreakdownHtml() {
+    var rows = debtBreakdownRows();
+    if (!rows.length) return "";
+    var html = '<div class="tablewrap" style="margin-top:12px;"><table class="stats-table"><thead><tr>' +
+      "<th>Mes</th><th>Origen</th><th>Cliente</th><th>Fecha</th><th>Cobrado por</th><th>Moneda</th><th>Monto</th>" +
+      "</tr></thead><tbody>";
+    rows.forEach(function (r) {
+      html += "<tr>" +
+        "<td>" + esc(r.mes) + "</td>" +
+        "<td>" + esc(r.origen) + "</td>" +
+        "<td>" + esc(r.cliente) + "</td>" +
+        "<td>" + fmtDateOnly(r.fecha) + "</td>" +
+        '<td style="color:' + personaColor(r.cobradoPor) + ';font-weight:700">' + esc(r.cobradoPor) + "</td>" +
+        "<td>" + r.moneda + "</td>" +
+        '<td class="num">' + fmtMoney(r.monto) + "</td>" +
+        "</tr>";
+    });
+    html += "</tbody></table></div>";
+    return '<div class="hint" style="margin-top:14px;margin-bottom:4px;">Detalle — cada cobro que compone los totales de arriba (cobrado y todavía no repartido)</div>' + html;
+  }
+
   function debtCardsHtml() {
     var bal = theoBrunoBalanceAll();
     var html = "";
@@ -1405,7 +1473,7 @@
         "</div></div>";
     });
     if (!html) return '<div class="hint" style="padding:6px 0;">Todavía no hay cobros marcados "Cobrado" en ningún mes.</div>';
-    return '<div class="debt-grid">' + html + "</div>";
+    return '<div class="debt-grid">' + html + "</div>" + debtBreakdownHtml();
   }
 
   function renderDebtSection() {
