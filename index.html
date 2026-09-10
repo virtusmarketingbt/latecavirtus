@@ -424,7 +424,7 @@
   var supabaseClient = null;
   var ROW_ID = "main";
 
-  var CLIENTES_FIJOS = ["Asia", "Natasha", "Mimoso", "Yaya's", "Floreria", "Mobili", "Eduardo"];
+  var CLIENTES_FIJOS = ["Asia", "Natasha", "Mimoso", "Yaya's", "Floreria", "Mobili", "Eduardo", "Dra Gurgitano", "Perfumes"];
   var FIXED_INGRESOS = [
     { slot: "asia", cliente: "Asia", moneda: "UYU" },
     { slot: "natasha-1", cliente: "Natasha", moneda: "USD" },
@@ -433,8 +433,14 @@
     { slot: "yayas", cliente: "Yaya's", moneda: "USD" },
     { slot: "floreria", cliente: "Floreria", moneda: "UYU" },
     { slot: "mobili", cliente: "Mobili", moneda: "UYU" },
-    { slot: "eduardo", cliente: "Eduardo", moneda: "UYU" }
+    { slot: "eduardo", cliente: "Eduardo", moneda: "UYU" },
+    // clientes nuevos: recién arrancan en septiembre, no deben aparecer en meses anteriores
+    { slot: "gurgitano", cliente: "Dra Gurgitano", moneda: "UYU", desde: "09" },
+    { slot: "perfumes", cliente: "Perfumes", moneda: "UYU", desde: "09" }
   ];
+  function ingresoFijoAplicaEnMes(def, monthKey) {
+    return !def.desde || def.desde <= monthKey;
+  }
   var CATEGORIAS_EGRESOS = ["Herramientas / Software", "Publicidad paga propia", "Freelancers"];
   var CATEGORIA_SHORT = { "Herramientas / Software": "Software", "Publicidad paga propia": "Publicidad" };
   var CATEGORIAS_EXCEPCIONALES = ["Web", "Otros"];
@@ -485,9 +491,11 @@
     return { id: uid(), fecha: "", concepto: "", moneda: "UYU", monto: "", pagado: "", metodo: "", notas: "", updatedAt: "", fixed: !!fixed };
   }
 
-  function defaultMonth() {
+  function defaultMonth(monthKey) {
     return {
-      ingresos: FIXED_INGRESOS.map(function (def) { return newIngresoRow(def.cliente, true, def.slot, def.moneda); }),
+      ingresos: FIXED_INGRESOS
+        .filter(function (def) { return ingresoFijoAplicaEnMes(def, monthKey); })
+        .map(function (def) { return newIngresoRow(def.cliente, true, def.slot, def.moneda); }),
       excepcionales: [],
       egresos: EGRESOS_FIJOS.map(function (def) {
         var r = newEgresoRow(true);
@@ -504,7 +512,7 @@
 
   function defaultState() {
     var months = {};
-    MES_KEYS.forEach(function (k) { months[k] = defaultMonth(); });
+    MES_KEYS.forEach(function (k) { months[k] = defaultMonth(k); });
     return { months: months };
   }
 
@@ -514,7 +522,7 @@
     delete r.bruno;
   }
 
-  function migrateMonth(monthData) {
+  function migrateMonth(monthData, monthKey) {
     monthData.ingresos = monthData.ingresos || [];
     monthData.excepcionales = monthData.excepcionales || [];
     monthData.egresos = monthData.egresos || [];
@@ -537,6 +545,7 @@
       if (candidates.length) { r.slot = candidates[0].slot; r.fixed = true; claimedSlots[candidates[0].slot] = true; }
     });
     FIXED_INGRESOS.forEach(function (def) {
+      if (!ingresoFijoAplicaEnMes(def, monthKey)) return;
       if (!claimedSlots[def.slot]) {
         monthData.ingresos.push(newIngresoRow(def.cliente, true, def.slot, def.moneda));
         claimedSlots[def.slot] = true;
@@ -599,8 +608,8 @@
   function normalizeState(parsed) {
     if (!parsed || !parsed.months) parsed = defaultState();
     MES_KEYS.forEach(function (k) {
-      if (!parsed.months[k]) parsed.months[k] = defaultMonth();
-      migrateMonth(parsed.months[k]);
+      if (!parsed.months[k]) parsed.months[k] = defaultMonth(k);
+      migrateMonth(parsed.months[k], k);
     });
     return parsed;
   }
